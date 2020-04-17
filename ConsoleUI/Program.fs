@@ -1,6 +1,6 @@
 ﻿open System
 open System.Collections.Generic
-
+open CompletionTimeBenchmark
 
 let mutable shouldStop = false
 
@@ -20,8 +20,8 @@ let hashSetMenu =
 let minMaxMenu =
     Map.empty.
         Add(0, ("Back", (fun () -> CurrentMenu := mainMenu ) )).
-        Add(1, ("Array Min Max with LINQ", (fun () -> printfn "not implemented yet"  ) )).
-        Add(2, ("Array Min Max manual", (fun () -> printfn "not implemented yet"  )));;
+        Add(1, ("Array Min Max with LINQ", (fun () -> printfn "%A " (CTBMinMax.DoBenchmarkMinMaxLinq 1_000_000)  ))).
+        Add(2, ("Array Min Max manual", (fun () -> printfn "%A " (CTBMinMax.DoBenchmarkMinMaxManual 1_000_000) )));;
 
 let GenerateMenu (map: Map<int,string * _>)=
     printfn "%s Enter a number for your choice of action: %s" Environment.NewLine Environment.NewLine

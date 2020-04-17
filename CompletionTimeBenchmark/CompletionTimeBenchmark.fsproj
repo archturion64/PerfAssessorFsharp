@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+  <Compile Include="CTBStopWatch.fs" />
+    <Compile Include="CTBenchmark.fs" />
+    <Compile Include="CTBHashSet.fs" />
+    <Compile Include="CTBMinMax.fs" />
+  </ItemGroup>
+</Project>
