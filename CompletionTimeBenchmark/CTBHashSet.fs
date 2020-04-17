@@ -1,53 +1,45 @@
 namespace CompletionTimeBenchmark
-(*using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Diagnostics;
 
-namespace CompletionTimeBenchmark
-{
-    public class CTBHashSet
-    {
-        private static Random rng = new Random();
+open System
+open System.Linq
+open System.Collections.Generic
 
-        private static HashSet<Tuple<string, double>> GenerateHashSetTuple(uint size)
-        {
-            var container = new HashSet<Tuple<string, double>>();
-            
-            for (uint i = 0; i < size; i++)
-            {
-                container.Add(new Tuple<string, double>(i.ToString(), rng.NextDouble()));
-            }
-            return container;
-        }
+module CTBHashSet =
+    let GenerateHashSetTuple size (rng:Random) =
+        let mySet = new HashSet<(string * float)>()
+        for i:int in 0 .. size - 1 do
+            mySet.Add( (i.ToString() , rng.NextDouble())) |> ignore
+        mySet
+    
+    // workaround for missing ValueTuple in the standard
+    type Val = struct
+        val first : string
+        val second : float
+        new (f: string, s: float) = { first = f; second = s; }
+    end
 
-        private static HashSet<ValueTuple<string, double>> GenerateHashSetValueTuple(uint size)
-        {
-            var container = new HashSet<ValueTuple<string, double>>();
-            
-            for (uint i = 0; i < size; i++)
-            {
-                container.Add(new ValueTuple<string, double>(i.ToString(), rng.NextDouble()));
-            }
-            return container;
-        }
+    let GenerateHashSetValueTuple size (rng:Random) =
+        let mySet  = new HashSet<Val>()
+        for i:int in 0 .. size - 1 do
+            mySet.Add( Val(i.ToString(), rng.NextDouble()) ) |> ignore
+        mySet
 
-        public static double DoBenchmarkTuple(uint size)
-        {
-            return CTBenchmark.RunBenchmark(() => {
-                double cnt = 0;
-                cnt += GenerateHashSetTuple(size).Sum(x => x.Item2);
-            });
-        }
+    let BenchmarkHashSetTuple size = 
+        let rnd = Random()
+        let mutable sum = 0.0
+        let mySet = GenerateHashSetTuple size rnd;
+        printf "%f" (Seq.sumBy (function item -> snd(item)) mySet)
 
-        public static double DoBenchmarkValueTuple(uint size)
-        {
-            return CTBenchmark.RunBenchmark(() => {
-                double cnt = 0;
-                cnt += GenerateHashSetValueTuple(size).Sum(x => x.Item2);
-            });
-        }
+    let BenchmarkHashSetValueTuple size = 
+        let rnd = Random()
+        let mutable sum = 0.0
+        let mySet = GenerateHashSetValueTuple size rnd;
+        printf "%f" (Seq.sumBy (function (item:Val) -> item.second) mySet)
 
-    }
-}*)
+    let DoBenchmarkHashSetTuple size : float=
+        let functionToBench = fun () -> BenchmarkHashSetTuple size
+        CTBenchmark.RunBenchmark <| functionToBench
+
+    let DoBenchmarkHashSetValueTuple size : float =
+        let functionToBench = fun () -> BenchmarkHashSetValueTuple size
+        CTBenchmark.RunBenchmark <| functionToBench

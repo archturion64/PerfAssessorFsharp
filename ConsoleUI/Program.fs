@@ -4,6 +4,8 @@ open CompletionTimeBenchmark
 
 let mutable shouldStop = false
 
+let containerSize = 1_000_000
+
 // workaround forward declaration shall be initialized in main()
 let mutable mainMenu =
     Map.empty.
@@ -11,17 +13,20 @@ let mutable mainMenu =
 
 let mutable CurrentMenu =  ref mainMenu
 
+let ReportResult testName test containerSize =
+    printfn "Bench %s complete in: %f ms" testName (test containerSize)
+
 let hashSetMenu =
     Map.empty.
         Add(0, ("Back", (fun () -> CurrentMenu := mainMenu ) )).
-        Add(1, ("Hashset<Tuple>", (fun () -> printfn "not implemented yet"  ) )).
-        Add(2, ("Hashset<ValueTuple>", (fun () -> printfn "not implemented yet"  )));;
+        Add(1, ("Hashset<Tuple>", (fun () -> ReportResult "Hashset<Tuple>" CTBHashSet.DoBenchmarkHashSetTuple containerSize  ) )).
+        Add(2, ("Hashset<ValueTuple>", (fun () -> ReportResult  "Hashset<ValueTuple>" CTBHashSet.DoBenchmarkHashSetValueTuple containerSize )));;
 
 let minMaxMenu =
     Map.empty.
         Add(0, ("Back", (fun () -> CurrentMenu := mainMenu ) )).
-        Add(1, ("Array Min Max with LINQ", (fun () -> printfn "%A " (CTBMinMax.DoBenchmarkMinMaxLinq 1_000_000)  ))).
-        Add(2, ("Array Min Max manual", (fun () -> printfn "%A " (CTBMinMax.DoBenchmarkMinMaxManual 1_000_000) )));;
+        Add(1, ("Array Min Max with LINQ", (fun () -> ReportResult "Array Min Max with LINQ" CTBMinMax.DoBenchmarkMinMaxLinq containerSize ))).
+        Add(2, ("Array Min Max manual", (fun () -> ReportResult "Array Min Max manual" CTBMinMax.DoBenchmarkMinMaxManual containerSize )));;
 
 let GenerateMenu (map: Map<int,string * _>)=
     printfn "%s Enter a number for your choice of action: %s" Environment.NewLine Environment.NewLine
